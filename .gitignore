@@ -1,0 +1,48 @@
+# Ignore compiled files and directories
+*.class
+*.jar
+*.war
+*.ear
+/target/
+/bin/
+/build/
+/dist/
+
+# Ignore IDE and editor files
+.idea/
+.vscode/
+*.code-workspace
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+*.swo
+
+# Ignore logs and temporary files
+*.log
+*.tmp
+*.temp
+
+# Ignore configuration files with sensitive data
+config.ini
+secrets.json
+
+# Ignore macOS system files
+.DS_Store
+
+# Ignore user-specific files
+*.user
+*.suo
+*.userprefs
+
+# Ignore Node.js modules
+node_modules/
+
+# Ignore virtual environment directories
+venv/
+.env/
+
+# Ignore package-lock.json and yarn.lock for Node.js projects
+package-lock.json
+yarn.lock
