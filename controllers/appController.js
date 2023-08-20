@@ -188,11 +188,11 @@ exports.sendFriendRequest = async (req, res) => {
 };
 
 // accept or reject friend request
-exports.friendRequest = async (req, res) => {
+exports.actionFriendRequest = async (req, res) => {
   try {
     const receiverUserId = req.user.id;
     const senderUserId = req.params.userId;
-    const action = req.body.action;
+    const action = req.params.action;
 
     const receiverUser = await User.findById(receiverUserId);
 
@@ -208,9 +208,7 @@ exports.friendRequest = async (req, res) => {
     }
 
     // Remove the sender's ID from the receiver's friendRequests array
-    receiverUser.friendRequests = receiverUser.friendRequests.filter(
-      (id) => id.toString() !== senderUserId
-    );
+    receiverUser.friendRequests.pull(senderUserId);
 
     // Handle 'accept' or 'reject' action
     if (action === "accept") {
@@ -221,11 +219,12 @@ exports.friendRequest = async (req, res) => {
       }
 
       // Update user's friends arrays
-      receiverUser.friends.push(senderUserId);
-      senderUser.friends.push(receiverUserId);
+      receiverUser.friends.addToSet(senderUserId);
+      senderUser.friends.addToSet(receiverUserId);
 
       await senderUser.save();
     }
+
     // Access user details from token
     const user = await User.findByIdAndUpdate(req.user.id);
     const accepterUserId = user.id;
@@ -290,6 +289,12 @@ exports.removeFriend = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    let message = "Friend removed";
+    // Check if the user has no friends left
+    if (user.friends.length === 0) {
+      message += ", and you no longer have any friends";
+    }
+
     // Check if the user has the friend they're trying to remove
     if (!user.friends.includes(friendUserId)) {
       return res
@@ -298,22 +303,11 @@ exports.removeFriend = async (req, res) => {
     }
 
     // Remove friendUserId from the user's friends array
-    user.friends = user.friends.filter(
-      (friendId) => friendId.toString() !== friendUserId
-    );
+    user.friends.pull(friendUserId);
     await user.save();
 
     // Remove userId from the friendUser's friends array
-    friendUser.friends = friendUser.friends.filter(
-      (friendId) => friendId.toString() !== userId
-    );
-
-    let message = "Friend removed";
-    // Check if the user has no friends left
-    if (user.friends.length === 0) {
-      message += ", and you no longer have any friends";
-    }
-
+    friendUser.friends.pull(userId);
     await friendUser.save();
 
     res.status(200).json({ message: message });

@@ -5,7 +5,7 @@ const {
   profilePicture,
   getUsers,
   sendFriendRequest,
-  friendRequest,
+  actionFriendRequest,
   friendRequests,
   friendList,
   removeFriend,
@@ -26,10 +26,14 @@ router.post(
 router.get("/users", verifyToken, getUsers);
 
 // Route to send a friend request
-router.post("/send-friend-request/:userId", verifyToken, sendFriendRequest);
+router.post(
+  "/send-friend-request/:userId/:action",
+  verifyToken,
+  sendFriendRequest
+);
 
 // Route to accept or reject a friend request
-router.put("/friend-request/:userId", verifyToken, friendRequest);
+router.put("/friend-request/:userId/:action", verifyToken, actionFriendRequest);
 
 // Route to get the list of friend requests for the authenticated user
 router.get("/show-friend-requests", verifyToken, friendRequests);
